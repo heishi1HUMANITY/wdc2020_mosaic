@@ -1,0 +1,26 @@
+{
+  "name": "re_canapp",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@material/checkbox": "^7.0.0",
+    "@material/slider": "^7.0.0",
+    "destyle.css": "^1.0.15",
+    "face-api.js": "^0.22.2",
+    "fs": "0.0.1-security"
+  },
+  "devDependencies": {
+    "css-loader": "^4.3.0",
+    "sass": "^1.26.10",
+    "sass-loader": "^10.0.2",
+    "style-loader": "^1.2.1",
+    "webpack": "^4.44.1",
+    "webpack-cli": "^3.3.12"
+  }
+}

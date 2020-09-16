@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="ja">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width,initial-scale=1.0">
+        <title>モザイクカメラ</title>
+        <link rel="shortcut icon" href="./img/icon-192.png" type="image/png">
+        <!-- PWA化 -->
+        <link rel="manifest" href="./manifest.json">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-status-bar-styke" content="black">
+        <meta name="apple-mobile-web-app-title" content="モザイクカメラ">
+    </head>
+
+    <body>
+        <canvas id="overlay_canvas"></canvas>
+        <img src="./img/button.png" id="shutter" class="shutter_style">
+        <img src="./img/wifi_protected_setup-black-18dp.svg" id="switcher">
+
+
+        <div id="menu" style="height: 0; padding: 0;">
+            <div class="menu_line">
+                <label for="checkbox-1"><p>モザイク無しの画像を保存する</p></label>
+                <div class="mdc-touch-target-wrapper">
+                    <div class="mdc-checkbox mdc-checkbox--touch">
+                        <input type="checkbox"
+                               class="mdc-checkbox__native-control"
+                               id="checkbox-1"/>
+                        <div class="mdc-checkbox__background">
+                            <svg class="mdc-checkbox__checkmark"
+                                 viewBox="0 0 24 24">
+                                <path class="mdc-checkbox__checkmark-path"
+                                      fill="none"
+                                      d="M1.73,12.91 8.1,19.28 22.79,4.59"/>
+                            </svg>
+                            <div class="mdc-checkbox__mixedmark"></div>
+                        </div>
+                        <div class="mdc-checkbox__ripple"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="menu_line">
+                <label for="checkbox-2"><p>撮影者のモザイクを外す</p></label>
+                <div class="mdc-touch-target-wrapper">
+                    <div class="mdc-checkbox mdc-checkbox--touch">
+                        <input type="checkbox"
+                               class="mdc-checkbox__native-control"
+                               id="checkbox-2"/>
+                        <div class="mdc-checkbox__background">
+                            <svg class="mdc-checkbox__checkmark"
+                                 viewBox="0 0 24 24">
+                                <path class="mdc-checkbox__checkmark-path"
+                                      fill="none"
+                                      d="M1.73,12.91 8.1,19.28 22.79,4.59"/>
+                            </svg>
+                            <div class="mdc-checkbox__mixedmark"></div>
+                        </div>
+                        <div class="mdc-checkbox__ripple"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="menu_line">
+                <p id='add_face'>検出用画像を追加する</p>
+            </div>
+
+            <div class="menu_line">
+                <p id='remove_face'>検出用画像を削除する</p>
+            </div>
+
+            <div class="menu_line">
+                <label for="checkbox-3"><p>高精度な顔検出</p></label>
+                <div class="mdc-touch-target-wrapper">
+                    <div class="mdc-checkbox mdc-checkbox--touch">
+                        <input type="checkbox"
+                               class="mdc-checkbox__native-control"
+                               id="checkbox-3"/>
+                        <div class="mdc-checkbox__background">
+                            <svg class="mdc-checkbox__checkmark"
+                                 viewBox="0 0 24 24">
+                                <path class="mdc-checkbox__checkmark-path"
+                                      fill="none"
+                                      d="M1.73,12.91 8.1,19.28 22.79,4.59"/>
+                            </svg>
+                            <div class="mdc-checkbox__mixedmark"></div>
+                        </div>
+                        <div class="mdc-checkbox__ripple"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="menu_line">
+                <p>感度</p>
+                <div class="mdc-slider mdc-slider--discrete" tabindex="0" role="slider"
+                     aria-valuemin="0" aria-valuemax="9" aria-valuenow="3"
+                     aria-label="Select Value" id="score_slider">
+                    <div class="mdc-slider__track-container">
+                        <div class="mdc-slider__track"></div>
+                    </div>
+                    <div class="mdc-slider__thumb-container">
+                        <svg class="mdc-slider__thumb" width="21" height="21">
+                            <circle cx="10" cy="10" r="7"></circle>
+                        </svg>
+                        <div class="mdc-slider__focus-ring"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="slide_button">
+                <div id="triangle"></div>
+            </div>
+        </div>
+
+        <script src="./js/index.js"></script>
+
+        <!-- <script src="./script/style.js"></script>
+        <script src="./script/mdc_style.js"></script>
+        <script src="./modules/face-api.js/dist/face-api.js"></script>
+        <script src="./script/get_user_os.js"></script>
+        <script src="./script/tools.js"></script>
+        <script src="./script/video.js"></script>
+        <script src="./script/detection.js"></script>
+        <script src="./script/mosaic.js"></script>
+        <script src="./script/camera.js"></script>
+        <script src="./script/index.js"></script> -->
+        <!-- <script>
+            if('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('sw.js')
+                .then(reg => {
+                    console.log('Service worker registerd.', reg);
+                })
+            }
+        </script>
+        <script src="/__/firebase/7.15.5/firebase-app.js"></script>
+        <script src="/__/firebase/7.15.5/firebase-analytics.js"></script>
+        <script src="/__/firebase/7.15.5/firebase-performance.js"></script>
+        <script src="/__/firebase/init.js"></script>
+        <script>
+            var perf = firebase.performance();
+        </script> -->
+    </body>
+    
+</html>
