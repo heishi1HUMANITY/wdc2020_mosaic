@@ -1,10 +1,12 @@
 {
-  "name": "re_canapp",
+  "name": "re_camapp",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "npx webpack",
+    "build": "npx webpack --mode production"
   },
   "author": "",
   "license": "ISC",

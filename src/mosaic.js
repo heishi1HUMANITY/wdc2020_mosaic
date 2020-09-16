@@ -4,7 +4,7 @@ const makeMosic = async (w, h, x, y, src) => {
     mosicLayer.setAttribute('height', h);
     const mosicCtx = mosicLayer.getContext('2d');
     mosicCtx.drawImage(src, -x, -y);
-    const imgData = mosicCtx.getImageData(0, 0, w, h);
+    const imgData = mosicCtx.getImageData(0, 0, w, h).data;
     let cR, cG, cB;
     for(let yPix = 0; yPix < h; yPix += 10) {
         for(let xPix = 0; xPix < w; xPix += 10) {
@@ -18,34 +18,36 @@ const makeMosic = async (w, h, x, y, src) => {
     return mosicLayer;
 }
 
-export const drawSomething = async (src, res, ctx, type) => {
-    ctx.clearRext(0,0, innerWidth, innerHeight);
-    for(face of res) {
+export const drawSomething = async (src, res, ctx, type, clear) => {
+    if(clear) ctx.clearRect(0,0, innerWidth, innerHeight);
+    for(let face of res) {
         let x = Math.floor(face.box.topLeft.x);
         let y = Math.floor(face.box.topLeft.y);
         let width = Math.floor(face.box.width);
         let height = Math.floor(face.box.height);
         switch(type) {
             case 'mosic':
-                let img = await makeMosic(width, height, x, y, src);
-                ctx.drawImage(img, x, y);
+                let mosaic = await makeMosic(width, height, x, y, src);
+                ctx.drawImage(mosaic, x, y);
+                break;
             case 'line':
-                ctx.strokeRext(x, y, width, height);
+                ctx.strokeRect(x, y, width, height);
+                break;
         }
     }
     return;
 };
 
 export const drawSomethingWithoutMyFace = async (src, res, ctx, faceMatcher) => {
-    for(face of res) {
+    for(let face of res) {
         const fRes = faceMatcher.findBestMatch(face.descriptor);
         if(fRes.label == 'unknown') {
             let x = Math.floor(face.detection.box.topLeft.x);
             let y = Math.floor(face.detection.box.topLeft.y);
             let width = Math.floor(face.detection.box.width);
             let height = Math.floor(face.detection.box.height);
-            let img = await makeMosic(width, height, x, y, src);
-            ctx.drawImage(img, x, y);
+            let mosaic = await makeMosic(width, height, x, y, src);
+            ctx.drawImage(mosaic, x, y);
         }
     }
     return;

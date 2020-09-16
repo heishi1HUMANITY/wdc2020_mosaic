@@ -14,10 +14,11 @@ export const startVideo = (videoDom, videoWidth, videoHeight, facingMode = 'user
         })
         .then(stream => {
             videoDom.srcObject = stream;
-            video.play();
+            videoDom.play();
             resolve();
         })
-        .catch(() => {
+        .catch((e) => {
+            console.log(e);
             const p = document.createElement('p');
             p.setAttribute('id', 'error_p');
             p.innerText = 'カメラにアクセスできません';
