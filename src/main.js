@@ -41,15 +41,18 @@ if(innerWidth > innerHeight) {
 import * as faceapi from 'face-api.js';
 import * as tool from './tool.js';
 import { realtimeFacedetection } from './detection.js';
-import { startVideo } from './video.js';
-import { drawSomething, drawSomethingWithoutMyFace } from './mosaic.js'
+import { startVideo, videoDevice } from './video.js';
+import { drawSomething, drawSomethingWithoutMyFace } from './mosaic.js';
+import { setMyFace, removeMyFace } from './set';
+
+console.log(videoDevice);
 
 const overlayCanvas = document.querySelector('#overlay_canvas');
 overlayCanvas.setAttribute('width', innerWidth);
 overlayCanvas.setAttribute('height', innerHeight);
 const ctx = overlayCanvas.getContext('2d');
 const video = document.createElement('video');
-let facingMode = 'user';
+let deviceIndex = 0;
 let videoWidth = innerWidth, videoHeight = innerHeight;
 if(tool.isAndroid() && innerWidth < innerHeight) {
     videoWidth = innerHeight, videoHeight = innerWidth;
@@ -58,7 +61,7 @@ let continueDetection = true;
 
 // initializer
 Promise.all([
-    startVideo(video, videoWidth, videoHeight, facingMode),
+    startVideo(video, videoWidth, videoHeight, videoDevice[deviceIndex]),
     faceapi.nets.tinyFaceDetector.load('../models'),
     faceapi.nets.faceLandmark68Net.load('../models'),
     faceapi.nets.faceRecognitionNet.load('../models'),
@@ -137,10 +140,13 @@ shutter.addEventListener('click', async () => {
 switcher.addEventListener('click', async () => {
     continueDetection = false;
     video.pause();
-    facingMode = facingMode == 'user' ? 'environment' : 'user';
+    deviceIndex++;
+    if(deviceIndex >= videoDevice.length) {
+        deviceIndex = 0;
+    }
     await tool.sleep(1000);
     document.body.removeChild(video);
-    await startVideo(video, videoWidth, videoHeight, facingMode);
+    await startVideo(video, videoWidth, videoHeight, videoDevice[deviceIndex]);
     await tool.sleep(1000);
     continueDetection = true;
     let res;
@@ -170,7 +176,7 @@ window.addEventListener('resize', async () => {
     overlayCanvas.setAttribute('height', innerHeight);
     await tool.sleep(1000);
     document.body.removeChild(video);
-    await startVideo(video, videoWidth, videoHeight, facingMode);
+    await startVideo(video, videoWidth, videoHeight, videoDevice[deviceIndex]);
     await tool.sleep(1000);
     continueDetection = true;
     let res;
@@ -184,83 +190,14 @@ window.addEventListener('resize', async () => {
 // setMyFace
 noMosaic.addEventListener('input', () => {
     if(noMosaic.checked) {
-        if(localStorage.getItem('myFace') == null) {
-            let menu = document.querySelector('#menu');
-            document.body.removeChild(menu);
-            document.body.removeChild(switcher);
-            document.body.removeChild(shutter);
-            let tmpShutter = document.createElement('img');
-            tmpShutter.setAttribute('src', './img/button.png');
-            tmpShutter.setAttribute('class', 'shutter_style');
-            tmpShutter.setAttribute('id', 'recog');
-            if(innerWidth > innerHeight) {
-                tmpShutter.setAttribute('style', 'left: auto; right: 16px; top: 50%; transform: translateY(-50%);');
-            }
-            document.body.appendChild(tmpShutter);
-            let tmpMessage = document.createElement('p');
-            tmpMessage.innerText = '検出する顔を登録します\n顔を写してください';
-            tmpMessage.setAttribute('style', 'position: absolute; top: 10%; left: 50%; transform: translateX(-50%); color: white; text-align: center;');
-            document.body.appendChild(tmpMessage);
-            tmpShutter.addEventListener('click', async () => {
-                const myFaceCanvas = document.createElement('canvas');
-                myFaceCanvas.setAttribute('height', innerHeight);
-                myFaceCanvas.setAttribute('width', innerWidth);
-                const myFaceCtx = myFaceCanvas.getContext('2d');
-                myFaceCtx.drawImage(video, 0, 0);
-                let myFaceRes = await faceapi.detectSingleFace(myFaceCanvas, new faceapi.TinyFaceDetectorOptions({inputSize: 608, scoreThreshold: 0.3})).withFaceLandmarks().withFaceDescriptor();
-                if(!myFaceRes) {
-                    let tmp = document.createElement('p');
-                    tmp.innerText = '検出できませんでした';
-                    tmp.setAttribute('style', 'position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 2; color: white;');
-                    document.body.appendChild(tmp);
-                    await tool.sleep(3000);
-                    document.bode.removeChild(tmp);
-                    return;
-                }
-                let imgTmp = myFaceCanvas.toDataURL('image/png');
-                if(localStorage.getItem('myFace') == null) {
-                    let storedImg = {
-                        0: imgTmp
-                    };
-                    localStorage.setItem('myFace', JSON.stringify(storedImg));
-                }else{
-                    let storedImg = JSON.parse(localStorage.getItem('myFace'));
-                    let tmp = {};
-                    let i;
-                    for(i = 0; i < Object.keys(storedImg).length; i++) {
-                        tmp[i] = storedImg[i];
-                    }
-                    tmp[i] = imgTmp;
-                    try {
-                        localStorage.setItem('myFace', JSON.stringify(tmp));
-                    }catch(e) {
-                        tmp = document.createElement('p');
-                        tmp.innerText = '検出画像が最大です、追加できません';
-                        tmp.setAttribute('style', 'position: absolute; top: 50%; left; 50%; transform: translate(-50%, -50%); z-index: 2; color: white');
-                        document.body.appendChild(tmp);
-                        await tool.sleep(3000);
-                        document.body.removeChild(tmp);
-                        document.body.removeChild(tmpShutter);
-                        document.body.removeChild(tmpMessage);
-                        document.body.appendChild(switcher);
-                        document.body.appendChild(shutter);
-                        document.body.appendChild(menu);
-                        return; 
-                    }
-                }
-                let tmp = document.createElement('p');
-                tmp.innerText = '保存しました';
-                tmp.setAttribute('style', 'position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 2; color: white');
-                document.body.appendChild(tmp);
-                await tool.sleep(3000);
-                document.body.removeChild(tmp);
-                document.body.removeChild(tmpShutter);
-                document.body.removeChild(tmpMessage);
-                document.body.appendChild(switcher);
-                document.body.appendChild(shutter);
-                document.body.appendChild(menu);
-                return;
-            })
-        }
+        setMyFace(switcher, shutter, video);
     }
-})
+});
+
+document.querySelector('#add_face').addEventListener('click', () => {
+    setMyFace(switcher, shutter, video);
+});
+
+document.querySelector('#remove_face').addEventListener('click', () => {
+    removeMyFace();
+});

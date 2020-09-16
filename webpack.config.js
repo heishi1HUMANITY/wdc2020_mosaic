@@ -3,10 +3,15 @@ const path = require('path');
 module.exports = {
     mode: 'development',
     entry: './src/main.js',
+    target: 'node',
     output: {
         filename: 'index.js',
         path: path.join(__dirname, 'public/js')
     },
+    resolve: {
+        extensions: ['.js', '.ts']
+    },
+    devtool: 'inline-source-map',
     module: {
         rules: [
             {
@@ -24,5 +29,8 @@ module.exports = {
                 ]
             }
         ]
+    },
+    performance: {
+        hints: false
     }
 };

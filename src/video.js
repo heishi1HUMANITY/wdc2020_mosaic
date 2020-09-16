@@ -1,28 +1,47 @@
-export const startVideo = (videoDom, videoWidth, videoHeight, facingMode = 'user') => {
+export let videoDevice = [];
+navigator.mediaDevices.enumerateDevices()
+.then(devices => {
+    for(let d of devices) {
+        if(d.kind == 'videoinput') {
+            videoDevice.push(d.deviceId);
+        }
+    }
+});
+
+export const startVideo = (videoDom, videoWidth, videoHeight, deviceId) => {
     videoDom.setAttribute('id', 'video_dom');
     videoDom.setAttribute('muted', '');
     videoDom.setAttribute('autoplay', '');
     document.body.appendChild(videoDom);
+    if(document.querySelector('#error_p')) {
+        document.body.removeChild(document.querySelector('#error_p'));
+    }
     return new Promise(resolve => {
-        navigator.mediaDevices.getUserMedia({
+        const func = () => navigator.mediaDevices.getUserMedia({
             video: {
                 width: videoWidth,
                 height: videoHeight,
-                facingMode: facingMode
+                deviceId: deviceId
             },
             audio: false
+        });
+        Promise.reject()
+        .catch(() => func())
+        .catch(() => func())
+        .catch(() => func())
+        .catch(() => func())
+        .catch(() => func())
+        .catch(e => {
+            alert(e);
+            const p = document.createElement('p');
+            p.setAttribute('id', 'error_p');
+            p.innerText = 'カメラにアクセスできません';
+            document.body.appendChild(p);
         })
         .then(stream => {
             videoDom.srcObject = stream;
             videoDom.play();
             resolve();
-        })
-        .catch((e) => {
-            console.log(e);
-            const p = document.createElement('p');
-            p.setAttribute('id', 'error_p');
-            p.innerText = 'カメラにアクセスできません';
-            document.body.appendChild(p);
         });
     });
 };
