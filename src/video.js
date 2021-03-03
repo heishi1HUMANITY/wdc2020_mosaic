@@ -39,6 +39,11 @@ export const startVideo = (videoDom, videoWidth, videoHeight, deviceId) => {
             document.body.appendChild(p);
         })
         .then(stream => {
+            let track = stream.getTracks();
+            let actualHeight = track[0].getSettings().height;
+            let actualWidth = track[0].getSettings().width;
+            console.log(`height: ${actualHeight}\nwidth: ${actualWidth}`);
+
             videoDom.srcObject = stream;
             videoDom.play();
             resolve();
